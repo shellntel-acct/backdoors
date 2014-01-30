@@ -17,4 +17,4 @@ gcc.exe -v -I c:\Path\To\WpdPack\Include -L c:\Path\To\WpdPack\lib dragon.c -L/u
 
 Note this has been tested and works under both 32 and 64 bit versions of windows ranging from XP - Win8 and Server 2k3 to Server2k12.
 
-If you have any questions reach me at @jarsna12 on twitter.
+If you have any questions reach me at @jarsnah12 on twitter.
