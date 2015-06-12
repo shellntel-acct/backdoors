@@ -11,7 +11,7 @@
  * 	Change to support IPv6
  * 	Remove Debug Logging
  *
- * By __int128 <jarsnah12@gmail.com>
+ * By __int128 <@jarsnah12>
  */
 #include <windows.h>
 #include <stdio.h>
